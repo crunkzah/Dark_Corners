@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public enum EnemyState
+{
+    Chasing
+}
+
 public enum GameState
 {
     Playing,

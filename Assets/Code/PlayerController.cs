@@ -10,7 +10,7 @@ public enum PlayerState
     Dead
 }
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoSingleton<PlayerController>
 {
     [HideInInspector]public CharacterController controller;
     
@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
 
     public Vector3 velocity;
 
-    void Awake()
+    public override void Init()
     {
         Inputs.ReadSens();
         PLAYER_LAYER = LayerMask.NameToLayer("Player");
@@ -44,9 +44,21 @@ public class PlayerController : MonoBehaviour
     }
 
     const float GRAVITY_Y = -15;
+    float GetGravity()
+    {
+        if(gravity_zero_timer > 0)
+            return 0;
+        return GRAVITY_Y;
+    }
+
+    float gravity_zero_timer;
+    void MakeGravityZeroForXTime(float x)
+    {
+        gravity_zero_timer = 0;
+    }
     const float VELOCITY_Y_GROUNDED = -15;
     float rotationY = 0;
-    float rotationX = 0;
+    [HideInInspector]public float rotationX = 0;
  
 
     public Vector3 GetClosestPointOnCollider(Vector3 point)
@@ -70,6 +82,7 @@ public class PlayerController : MonoBehaviour
 
     void OnBecomeAirbourne()
     {
+        secondJumpHappened = false;
         airbourne_timestamp = Time.time;
         if(velocity.y < 0)
         {
@@ -110,6 +123,7 @@ public class PlayerController : MonoBehaviour
         return true;
     }
 
+    bool secondJumpHappened = false;
     void Jump()
     {
         if(controller.height < 1.9f)
@@ -126,13 +140,47 @@ public class PlayerController : MonoBehaviour
                 velocity.y = jumpForce;
                 OnJump();
             }
+            else
+            {
+                if(!secondJumpHappened)
+                {
+                    velocity.y = jumpForce * 1.25f;    
+                    secondJumpHappened = true;
+                }
+            }
         }
     }
 
     float controller_target_height = 2;
 
+    public Light playerLight;
+
+    bool isDashing = false;
+    Vector3 dash_position;
+    Vector3 dash_position_direction;
+    public const float DASH_SPEED = 144;
+    
+    Vector3 velocity_before_dash;
+
+    public void DoDash(Vector3 _dash_position, Vector3 _dash_position_direction)
+    {
+        dash_position_direction = _dash_position_direction;
+        velocity_before_dash = velocity;
+        dash_position = _dash_position;
+        isDashing = true;
+    }
+
     void UpdateAlive(float dt)
     {
+        gravity_zero_timer -= dt;
+        if(gravity_zero_timer <= 0)
+            gravity_zero_timer = 0;
+
+        float targetIntensity = 0;
+        if((Math.Get_XZ(velocity) + Math.Get_XZ(externalVelocity)).sqrMagnitude > 0)
+            targetIntensity = 3;
+        playerLight.intensity = Mathf.MoveTowards(playerLight.intensity, targetIntensity, 16 * dt);
+
         HUDManager.HideLabelText();
         RaycastHit interactionHit;        
         Ray interactionRay = CameraController.Instance.fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
@@ -216,9 +264,7 @@ public class PlayerController : MonoBehaviour
             else
                 _acceleration = acceleration * 0.66f;
             if(velocity.y < 0)
-            {
-                velocity.y += GRAVITY_Y  * dt; //Apply gravity second time if we are falling down
-            }
+                velocity.y += GetGravity()  * dt; //Apply gravity second time if we are falling down
         }
         if(Input.GetKeyDown(Inputs.JumpKey.Key))
             Jump();
@@ -233,7 +279,7 @@ public class PlayerController : MonoBehaviour
 
         velocity.x = velocityXZ.x;
         velocity.z = velocityXZ.z;
-        velocity.y += GRAVITY_Y  * dt;
+        velocity.y += GetGravity()  * dt;
         
 
         if(wasGroundedBefore && !controller.isGrounded)
@@ -247,10 +293,27 @@ public class PlayerController : MonoBehaviour
 
         wasGroundedBefore = controller.isGrounded;
         Vector3 motion = externalVelocity + velocity;
-        controller.Move(motion * dt);
+
+        if(isDashing)
+        {
+            velocity = new Vector3(0, 0, 0);
+            transform.position = Vector3.MoveTowards(transform.position, dash_position, dt * DASH_SPEED);
+            if(Vector3.Distance(transform.position, dash_position) < 0.02f)
+            {
+                isDashing = false;
+                MakeGravityZeroForXTime(0.1f);
+                velocity = dash_position_direction * Math.Get_XZ(velocity_before_dash).magnitude + new Vector3(0, 1, 0); 
+            }
+            //controller.Move(motion * dt);
+        }
+        else
+        {
+            controller.Move(motion * dt);
+            HeadBobbing.Instance.UpdateMe(transform.InverseTransformDirection(velocity));
+        }
     }
 
-    public const float DASH_SPEED = 72;
+    
     float spawning_timer;
 
     void Update()
@@ -322,10 +385,10 @@ public class PlayerController : MonoBehaviour
     {
     }
 
-    public void TeleportPlayer(Vector3 pos, float angle_y)
+    public void TeleportPlayer(Vector3 pos, float angle_y, float angle_x)
     {
         //Debug.Log("TeleportPlayer at " + pos);
-        rotationX = 0;
+        rotationX = angle_x;
         rotationY = angle_y;
         controller.enabled = false;
         transform.position = pos;

@@ -19,6 +19,10 @@ public static class Inputs
     public static readonly GameInput AttackKey = new GameInput("Attack", KeyCode.Mouse0);
     public static readonly GameInput CrouchKey = new GameInput("Crouch", KeyCode.LeftControl);
 
+    public static readonly GameInput Spell_1_Key = new GameInput("Spell1", KeyCode.Q);
+    public static readonly GameInput Spell_2_Key = new GameInput("Spell2", KeyCode.E);
+    public static readonly GameInput Spell_3_Key = new GameInput("Spell3", KeyCode.R);
+
     public static void ReadFov()
     {
         FIELD_OF_VIEW = PlayerPrefs.GetFloat("Fov", 103);
