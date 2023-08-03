@@ -77,6 +77,7 @@ public class SpellsController : MonoSingleton<SpellsController>
             f++;
             hand_right.Play("Base.Cast_1_slow", 0, 0);
             hand_left.Play("Base.Cast_1_slow", 0, 0);
+            //Debug.Log("Mek");
             
             if(!activeOrb)
             {
@@ -90,10 +91,13 @@ public class SpellsController : MonoSingleton<SpellsController>
             }
             else
             {
+                if(activeOrb != null)
+                {
                 //PlayerController.Instance.TeleportPlayer(activeOrb.GetTeleportPosition(), activeOrb.transform.eulerAngles.y, PlayerController.Instance.rotationX);
-                PlayerController.Instance.DoDash(activeOrb.GetTeleportPosition(), activeOrb.transform.forward);
-                activeOrb.TeleportToOrb();
-                activeOrb = null;
+                    PlayerController.Instance.DoDash(activeOrb.GetTeleportPosition(), activeOrb.transform.forward);
+                    activeOrb.TeleportToOrb();
+                    activeOrb = null;
+                }
             }
         }
 
