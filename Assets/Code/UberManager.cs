@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 public enum EnemyState
 {
-    Chasing
+    Chasing,
+    Dead
 }
 
 public enum GameState
@@ -17,6 +18,11 @@ public enum GameState
 public interface Interactable
 {
     void Interact();
+}
+
+public interface IDamagable
+{
+    void TakeDamage(float damage);
 }
 
 public class UberManager : MonoSingleton<UberManager>

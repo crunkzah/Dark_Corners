@@ -61,7 +61,17 @@ public class Projectile : MonoBehaviour
             RaycastHit hit;
             if(Physics.SphereCast(transform.position, col.radius, velocity.normalized, out hit, dt * velocity.magnitude))
             {
-                velocity = Vector3.Reflect(velocity.normalized, hit.normal) * velocity.magnitude;
+                if(hit.collider.gameObject.isStatic)
+                    velocity = Vector3.Reflect(velocity.normalized, hit.normal) * velocity.magnitude;
+                else
+                {
+                    IDamagable idamagable = hit.collider.GetComponent<IDamagable>();
+                    if(idamagable != null)
+                    {
+                        idamagable.TakeDamage(2f);
+                        Disappear();
+                    }
+                }
             }
             transform.forward = velocity.normalized;
         }

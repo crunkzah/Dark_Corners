@@ -48,7 +48,7 @@ public static class Math
         return a;
     }
 
-    public static void RotateTowardsPosition(Transform tr, Vector3 pos, float delta)
+    public static void RotateTowardsPositionXZ(Transform tr, Vector3 pos, float delta)
     {
         Vector3 p = tr.position;
         pos.y = p.y = 0;

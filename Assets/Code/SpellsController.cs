@@ -67,7 +67,7 @@ public class SpellsController : MonoSingleton<SpellsController>
                 const float proj_speed = 72;
 
                 ShootProjectile(_gunPoint.position, proj_dir * proj_speed);
-                Debug.Log("KEK: " + _gunPoint.gameObject.name);
+                //Debug.Log("KEK: " + _gunPoint.gameObject.name);
                 f++;
             }
         }

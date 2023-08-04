@@ -10,7 +10,7 @@ public enum PlayerState
     Dead
 }
 
-public class PlayerController : MonoSingleton<PlayerController>
+public class PlayerController : MonoSingleton<PlayerController>, IDamagable
 {
     [HideInInspector]public CharacterController controller;
     
@@ -76,6 +76,12 @@ public class PlayerController : MonoSingleton<PlayerController>
     {
         
     }
+
+    public static Vector3 GetPosition()
+    {
+        return Instance.transform.position;
+    }
+
 
     float airbourne_timestamp;
     const float JUMP_COYOTE_TIMEWINDOW = 0.125f;
@@ -365,11 +371,6 @@ public class PlayerController : MonoSingleton<PlayerController>
         return cam.transform;
     }
 
-    public void TakeDamage(int dmg, float ministun_mult, bool showText)
-    {
-        
-    }
-
     public Vector3 GetGroundPosition()
     {
         return transform.localPosition;
@@ -413,6 +414,12 @@ public class PlayerController : MonoSingleton<PlayerController>
         
         // style.normal.textColor = Color.green;
         // GUI.Label(new Rect(Screen.width/2 - w/2, Screen.height - h*2.25f, w, h),  "dot: " + dot_xz_vel_desiredVel.ToString());
+    }
+
+    public void TakeDamage(float damage)
+    {
+        DamageOverlay.Instance.ShowOverlay(0.33f);
+        Debug.Log("Player took " + damage + " damage");
     }
 
     public AudioSource player_audio;
