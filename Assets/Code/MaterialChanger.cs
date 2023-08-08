@@ -6,6 +6,7 @@ public class MaterialChanger : MonoBehaviour
 {
     public Renderer[] rends;
     public Material hurt_material;
+    public Material dead_material;
     Material saved_material;
 
     public void ChangeMaterialForXTime(float x)
@@ -23,6 +24,16 @@ public class MaterialChanger : MonoBehaviour
 
         CancelInvoke();
         Invoke(nameof(RevertMaterialToOriginal), x);
+    }
+
+    public void ChangeMaterialToDead()
+    {
+        CancelInvoke();
+        int len = rends.Length;
+        for(int i = 0; i < len; i++)
+        {
+            rends[i].sharedMaterial = dead_material;
+        }
     }
 
     void RevertMaterialToOriginal()

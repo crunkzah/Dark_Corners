@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PostProcessing;
 
 public class CameraController : MonoSingleton<CameraController>
 {
@@ -12,6 +13,15 @@ public class CameraController : MonoSingleton<CameraController>
     {
         base.Init();
         worldCam = GetComponent<Camera>();
+    }
+
+    public PostProcessingProfile dead_profile;
+
+    public void OnDie()
+    {   
+        PostProcessingBehaviour ppb = GetComponent<PostProcessingBehaviour>();
+        if(ppb)
+            ppb.profile = dead_profile;
     }
 
     public void LateUpdate()

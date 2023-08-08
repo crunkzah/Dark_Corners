@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 
 
-public class GolemController : MonoBehaviour, IDamagable
+public class GolemController : MonoBehaviour, IDamagable, ILaunchableAirbourne
 {
     public EnemyState state = EnemyState.Chasing;
     Animator anim;
@@ -16,11 +16,38 @@ public class GolemController : MonoBehaviour, IDamagable
 
     public LayerMask hurtMask;
 
+    public ParticleSystem[] eyes_ps;
+
+    Collider col;
+    Rigidbody rb;
+
     void Awake()
     {
         anim            = GetComponent<Animator>();
         agent           = GetComponent<NavMeshAgent>();
+        agent_speed_original = agent.speed;
         materialChanger = GetComponent<MaterialChanger>();
+        col             = GetComponent<Collider>();
+        rb              = GetComponent<Rigidbody>();
+    }
+
+    public void GetLaunched(Vector3 _vel)
+    {
+        SetState(EnemyState.Airbourne);
+        rb.velocity = _vel;
+        launchedAirbourneTimeStamp = Time.time;
+    }
+
+    float launchedAirbourneTimeStamp;
+
+    void OnCollisionStay(Collision collisionInfo)
+    {
+        if(state == EnemyState.Airbourne && (Time.time - launchedAirbourneTimeStamp > 0.1f) && collisionInfo.collider.gameObject.isStatic)
+        {
+            rb.isKinematic = true;
+            agent.enabled = true;
+            SetState(EnemyState.Chasing);
+        }
     }
 
     void SetState(EnemyState _state)
@@ -30,6 +57,28 @@ public class GolemController : MonoBehaviour, IDamagable
 
         switch(_state)
         {
+            case(EnemyState.Dead):
+            {
+                materialChanger.ChangeMaterialToDead();
+                col.enabled = false;
+                agent.enabled = false;
+                anim.Play("Base.Die", 0, 0);
+                anim.SetLayerWeight(1, 0);
+                golem_audioSource.PlayOneShot(die_clip);
+                SpawnedObject so = GetComponent<SpawnedObject>();
+                if(so)
+                    so.OnObjectDied();
+                Destroy(this.gameObject, 5);
+                break;
+            }
+            case(EnemyState.Airbourne):
+            {
+                anim.Play("Base.Run", 0, 0);
+                agent.enabled = false;
+                rb.isKinematic = false;
+                CancelInvoke();
+                break;
+            }
             default:
             {
                 break;
@@ -40,6 +89,7 @@ public class GolemController : MonoBehaviour, IDamagable
     }
 
     float attack_timer;
+    float agent_speed_original;
 
     void Update()
     {
@@ -54,16 +104,24 @@ public class GolemController : MonoBehaviour, IDamagable
                 agent.SetDestination(PlayerController.GetPosition());
                 float distance_to_player = Vector3.Distance(transform.position, PlayerController.GetPosition());
 
-                if(distance_to_player < agent.stoppingDistance * 1.1f)
+                if(distance_to_player < agent.stoppingDistance * 2f)
                 {
                     Math.RotateTowardsPositionXZ(transform, PlayerController.GetPosition(), dt * 180);
 
                     if(attack_timer <= 0)
                     {
+                        for(int i = 0; i < eyes_ps.Length; i++)
+                            eyes_ps[i].Play();
                         attack_timer = 2;
+                        agent.speed = agent_speed_original * 3.5f;
                         anim.Play("UpperBody.Attack1", 1, 0);
                     }
                 }
+                break;
+            }
+            case(EnemyState.Airbourne):
+            {
+                transform.Rotate(new Vector3(0, 480 * dt, 0));
                 break;
             }
             default:
@@ -75,9 +133,11 @@ public class GolemController : MonoBehaviour, IDamagable
 
     public void OnAttack1()
     {
+        agent.speed = agent_speed_original;
         Debug.Log("OnAttack1");
-        
-        StartCoroutine(DoDamage(0.1f, 1f));
+        golem_audioSource.pitch = Random.Range(0.9f, 1.1f);
+        golem_audioSource.PlayOneShot(impact_clip);
+        StartCoroutine(DoDamage(0.05f, 1f));
     }
 
     static Collider[] cols_buffer = new Collider[64];
@@ -89,7 +149,7 @@ public class GolemController : MonoBehaviour, IDamagable
 
         for(float timer = 0; timer <= duration; timer += Time.deltaTime)
         {
-            int len = Physics.OverlapSphereNonAlloc(hurtPoint.position, 1f, cols_buffer, hurtMask);
+            int len = Physics.OverlapSphereNonAlloc(hurtPoint.position, 1.2f, cols_buffer, hurtMask);
             for(int i = 0; i < len; i++)
             {
                 if(cols_were_hurt.Contains(cols_buffer[i]))
@@ -107,9 +167,24 @@ public class GolemController : MonoBehaviour, IDamagable
         }
     }
 
+    public float Health = 15;
+
     public void TakeDamage(float damage)
     {
         materialChanger.ChangeMaterialForXTime(0.1f);
-        Debug.Log(this.gameObject.name + " took " + damage + " damage");
+        Health -= damage;
+        AudioManager.PlayHurtAt(hurtPoint.position, 0.9f);
+        if(Health <= 0)
+        {
+            Health = 0;
+            SetState(EnemyState.Dead);
+        }
+        // Debug.Log(this.gameObject.name + " took " + damage + " damage");
     }
+
+    [Header("Audio:")]
+    public AudioSource golem_audioSource;
+    public AudioClip impact_clip;
+    public AudioClip die_clip;
+
 }

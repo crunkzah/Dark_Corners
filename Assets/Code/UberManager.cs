@@ -2,10 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using DavidFDev.DevConsole;
 
 public enum EnemyState
 {
     Chasing,
+    Aiming,
+    Airbourne,
     Dead
 }
 
@@ -25,6 +28,11 @@ public interface IDamagable
     void TakeDamage(float damage);
 }
 
+public interface ILaunchableAirbourne
+{
+    void GetLaunched(Vector3 velocity);
+}
+
 public class UberManager : MonoSingleton<UberManager>
 {
     public override void Init()
@@ -35,6 +43,36 @@ public class UberManager : MonoSingleton<UberManager>
         StopTimer();
 
         SetState(GameState.Playing);
+
+
+        CreateConsoleCommands();
+    }
+
+    public static bool GodMode = false;
+
+    void CreateConsoleCommands()
+    {
+        // DevConsole.AddCommand(Command.Create<string>(
+        //     name: "god",
+        //     aliases: "",
+        //     helpText: "Sets player to be invincible",
+        //     p1: Parameter.Create(
+        //         name: "value",
+        //     ),
+        //     callback: (string message) => DevConsole.Log(message)
+        //     ));
+    }
+
+    [DevConsoleCommand(name: "god", aliases: "", helpText: "")]
+    static void SetGodMode(string message)
+    {
+        int x = 0;
+        if(int.TryParse(message, out x))
+        {
+            UberManager.GodMode = (x > 0);
+        }
+
+        DevConsole.Log("God value: " + UberManager.GodMode);
     }
 
     static int interaction_mask = -1;
@@ -65,7 +103,7 @@ public class UberManager : MonoSingleton<UberManager>
     public float timeScale = 1;
     [Range(0.1f, 3)]
     public float timeScale_target = 1;
-    public float timeChangeSpeed = 0.15f;
+    public float timeChangeSpeed = 0.33f;
 
     void SetState(GameState _state)
     {
@@ -76,7 +114,7 @@ public class UberManager : MonoSingleton<UberManager>
                 Time.timeScale = 0;
                 MenuManager.Instance.SetPauseVisibile(true);
                 Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.lockState = CursorLockMode.None;
                 break;
             }
             case(GameState.Playing):
@@ -93,7 +131,11 @@ public class UberManager : MonoSingleton<UberManager>
 
     void Update()
     {
-        timeScale = Mathf.MoveTowards(timeScale, timeScale_target, Time.deltaTime * timeChangeSpeed);
+        float _changeSpeed = timeChangeSpeed;
+        if(timeScale_target < timeScale)
+            _changeSpeed *= 2;
+        timeScale = Mathf.MoveTowards(timeScale, timeScale_target, Time.deltaTime * _changeSpeed);
+        
         switch(state)
         {
             case(GameState.Paused):
@@ -111,7 +153,7 @@ public class UberManager : MonoSingleton<UberManager>
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
         }
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if(Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.BackQuote) || Input.GetKeyDown(KeyCode.Tilde))
         {
             if(state == GameState.Playing)
             {

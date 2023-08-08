@@ -59,7 +59,7 @@ public class Projectile : MonoBehaviour
         if(velocity.sqrMagnitude > 0)
         {
             RaycastHit hit;
-            if(Physics.SphereCast(transform.position, col.radius, velocity.normalized, out hit, dt * velocity.magnitude))
+            if(Physics.SphereCast(transform.position, col.radius, velocity.normalized, out hit, dt * velocity.magnitude, collisionMask))
             {
                 if(hit.collider.gameObject.isStatic)
                     velocity = Vector3.Reflect(velocity.normalized, hit.normal) * velocity.magnitude;

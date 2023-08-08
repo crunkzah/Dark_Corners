@@ -54,7 +54,13 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
     float gravity_zero_timer;
     void MakeGravityZeroForXTime(float x)
     {
-        gravity_zero_timer = 0;
+        gravity_zero_timer = x;
+    }
+
+    float slow_timer;
+    public void MakeSlowForXTime(float x)
+    {
+        slow_timer = x;
     }
     const float VELOCITY_Y_GROUNDED = -15;
     float rotationY = 0;
@@ -103,6 +109,11 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
         {
             //player_audio.PlayOneShot(landing_clip);
         }
+    }
+
+    public void BoostVelocity(Vector3 _vel)
+    {
+        velocity = _vel;
     }
 
     bool wasGroundedBefore = false;
@@ -164,7 +175,7 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
     bool isDashing = false;
     Vector3 dash_position;
     Vector3 dash_position_direction;
-    public const float DASH_SPEED = 144;
+    public const float DASH_SPEED = 144 * 3;
     
     Vector3 velocity_before_dash;
 
@@ -181,6 +192,10 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
         gravity_zero_timer -= dt;
         if(gravity_zero_timer <= 0)
             gravity_zero_timer = 0;
+
+        slow_timer -= dt;
+        if(slow_timer <= 0)
+            slow_timer = 0;
 
         float targetIntensity = 0;
         if((Math.Get_XZ(velocity) + Math.Get_XZ(externalVelocity)).sqrMagnitude > 0)
@@ -230,6 +245,10 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
         }
 
         float desiredMoveSpeed      = moveSpeed;
+        if(slow_timer > 0)
+        {
+            desiredMoveSpeed *= 0.5f;
+        }
         Vector3 desiredVelocityXZ   = localInputXZ * desiredMoveSpeed;
         desiredVelocityXZ = localInputXZ * desiredMoveSpeed;
 
@@ -304,6 +323,7 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
         {
             velocity = new Vector3(0, 0, 0);
             transform.position = Vector3.MoveTowards(transform.position, dash_position, dt * DASH_SPEED);
+            UberManager.Instance.timeScale = 0.1f;
             if(Vector3.Distance(transform.position, dash_position) < 0.02f)
             {
                 isDashing = false;
@@ -314,6 +334,7 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
         }
         else
         {
+            UberManager.Instance.timeScale = 1f;
             controller.Move(motion * dt);
             HeadBobbing.Instance.UpdateMe(transform.InverseTransformDirection(velocity));
         }
@@ -348,6 +369,34 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
                 break;
             }
         }
+    }
+
+    void SetState(PlayerState _state)
+    {
+        if(state == PlayerState.Dead)
+            return;
+
+        switch(_state)
+        {
+            case(PlayerState.Spawning):
+            {
+                break;
+            }
+            case(PlayerState.Alive):
+            {
+                break;
+            }
+            case(PlayerState.Dead):
+            {
+                SpellsController.Instance.CancelAllInvokes();
+                SpellsController.Instance.enabled = false;
+                CameraController.Instance.fpsCam.enabled = false;
+                CameraController.Instance.OnDie();
+                break;
+            }
+        }
+
+        state = _state;
     }
 
 
@@ -416,9 +465,27 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
         // GUI.Label(new Rect(Screen.width/2 - w/2, Screen.height - h*2.25f, w, h),  "dot: " + dot_xz_vel_desiredVel.ToString());
     }
 
+    [HideInInspector] public float Health = 50;
+
     public void TakeDamage(float damage)
     {
-        DamageOverlay.Instance.ShowOverlay(0.33f);
+        if(UberManager.GodMode)
+        {
+            return;
+        }
+
+        Health -= damage;
+        if(Health <= 0)
+        {
+            Health = 0;
+            SetState(PlayerState.Dead);
+        }
+        else
+            DamageOverlay.Instance.ShowOverlay(0.33f);
+        
+        
+        
+        
         Debug.Log("Player took " + damage + " damage");
     }
 

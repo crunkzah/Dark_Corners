@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &207484781979932712
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 263980053710840320}
+  m_Layer: 0
+  m_Name: MusicSrc
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &263980053710840320
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207484781979932712}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 9048843416997611310}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9048843416997611304
 GameObject:
   m_ObjectHideFlags: 0
@@ -10,6 +40,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9048843416997611310}
   - component: {fileID: 9048843416997611311}
+  - component: {fileID: 5798744625829956866}
   m_Layer: 0
   m_Name: UberManager
   m_TagString: Untagged
@@ -27,7 +58,8 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 263980053710840320}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -47,3 +79,22 @@ MonoBehaviour:
   timeScale: 1
   timeScale_target: 1
   timeChangeSpeed: 0.15
+--- !u!114 &5798744625829956866
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9048843416997611304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6769fbab6f00141499c44dfe0b9f0f93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  music_audioSrc: {fileID: 0}
+  hurt_1_sfx: {fileID: 8300000, guid: 184267fdd006a054daa5885ccffe2c79, type: 3}
+  master_mixer: {fileID: 24300002, guid: 1f6a52d3b8cc0d84ebcbd8c104b25a9b, type: 2}
+  music_mixer: {fileID: -2723598849534141909, guid: 1f6a52d3b8cc0d84ebcbd8c104b25a9b, type: 2}
+  sfx_mixer: {fileID: -6584109454410610977, guid: 1f6a52d3b8cc0d84ebcbd8c104b25a9b, type: 2}
+  audio_3d_common_prefab: {fileID: 2104550669946103281, guid: 73dbf59c756583c4b81510cdfb874a79, type: 3}
+  audio_3d_bigRange_prefab: {fileID: 2104550669946103281, guid: 4bce7f971d5ff664c88fb1f26a25b2ce, type: 3}

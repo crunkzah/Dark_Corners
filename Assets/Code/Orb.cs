@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Orb : MonoBehaviour
 {
-    public LayerMask groundMask;
+    public LayerMask hitMask;
     public ParticleSystem ps_loop;
     HashSet<Collider> hit_cols = new HashSet<Collider>();
 
@@ -26,7 +26,7 @@ public class Orb : MonoBehaviour
         _light.intensity = 0;
         transform.position = pos;
         velocity = vel;
-        lifeTimer = 8;
+        lifeTimer = 4;
         targetVolume = 1;
     }
 
@@ -46,10 +46,12 @@ public class Orb : MonoBehaviour
         targetIntensity = 0;
         targetVolume = 0;
         isWorking = false;
-        SpellsController.Instance.activeOrb = null;
+        if(SpellsController.Instance.activeOrb && SpellsController.Instance.activeOrb == this)
+            SpellsController.Instance.activeOrb = null;
 
         Destroy(this.gameObject, 3);
     }
+
 
     void Update()
     {
@@ -69,9 +71,22 @@ public class Orb : MonoBehaviour
         if(velocity.sqrMagnitude > 0)
         {
             RaycastHit hit;
-            if(Physics.SphereCast(transform.position, col.radius, velocity.normalized, out hit, dt * velocity.magnitude))
+            if(Physics.SphereCast(transform.position, col.radius, velocity.normalized, out hit, dt * velocity.magnitude, hitMask))
             {
-                velocity = Vector3.Reflect(velocity.normalized, hit.normal) * velocity.magnitude;
+                if(hit.collider.gameObject.isStatic)
+                    velocity = Vector3.Reflect(velocity.normalized, hit.normal) * velocity.magnitude;
+                else
+                {
+                    if(!hit_cols.Contains(hit.collider))
+                    {
+                        IDamagable idamagable = hit.collider.GetComponent<IDamagable>();
+                        if(idamagable != null)
+                        {
+                            idamagable.TakeDamage(1f);
+                            hit_cols.Add(hit.collider);
+                        }
+                    }
+                }
             }
             transform.forward = velocity.normalized;
         }
