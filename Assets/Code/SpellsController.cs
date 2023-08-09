@@ -49,11 +49,47 @@ public class SpellsController : MonoSingleton<SpellsController>
     void ShootProjectileDelayed()
     {
         Ray ray = CameraController.Instance.worldCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        PlayerController.Instance.BoostVelocityAdditive(-ray.direction * 1);
         Transform _gunPoint = (f % 2 == 0 ? hand_right_gunPoint : hand_left_gunPoint);
         Vector3 proj_dir = (ray.origin + ray.direction * 1000 - _gunPoint.position).normalized;
         const float proj_speed = 72;
 
         ShootProjectile(_gunPoint.position, proj_dir * proj_speed);
+    }
+
+    public TrailRendererController[] hand_trails;
+    public GameObject laser_original;
+
+    void ShootLaser()
+    {
+        Ray ray = CameraController.Instance.worldCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        if(PlayerController.Instance.IsGrounded())
+        {
+            PlayerController.Instance.MakeGravityZeroForXTime(0.033f);
+            PlayerController.Instance.BoostVelocity(-ray.direction * 12);
+        }
+        else
+            PlayerController.Instance.BoostVelocity(-ray.direction * 5.5f);
+        CameraController.Instance.AddFov(4);
+        gunAudioSrc.PlayOneShot(laser_clip);
+
+        Vector3 laser_end_point = ray.GetPoint(200);
+
+        RaycastHit hit;
+        if(Physics.Raycast(ray, out hit, 200, hurtMask))
+        {
+            IDamagable idamagable = hit.collider.GetComponent<IDamagable>();
+            if(idamagable != null)
+                idamagable.TakeDamage(10);
+            laser_end_point = hit.point + hit.normal * 0.01f;
+        }
+
+            
+
+        GameObject g = Instantiate(laser_original, middle_gunPoint.position, Quaternion.identity);
+        Laser laser = g.GetComponent<Laser>();
+        laser.Make(middle_gunPoint.position - 0.25f * CameraController.Instance.transform.up, laser_end_point);
+        Flashbang.MakeAt(laser_end_point, 0.45f, 8, 10, new Color(45f/255f, 201f/255f, 1f), false);
     }
 
     int f;
@@ -82,14 +118,29 @@ public class SpellsController : MonoSingleton<SpellsController>
         {
             if(Input.GetKey(Inputs.AttackKey.Key))
             {
-                gun_timer = gun_cooldown;
-                Animator _anim = (f % 2 == 0 ? hand_right : hand_left);
+                if(Input.GetKey(Inputs.CrouchKey.Key))
+                {
+                    gun_timer = gun_cooldown * 3.5f;
+                    hand_right.Play("Base.Cast_3", 0, 0);
+                    hand_left.Play("Base.Cast_3", 0, 0);
+                    for(int i = 0; i < hand_trails.Length; i++)
+                        hand_trails[i].EmitFor(0.5f);
 
-                string _anim_name = "Base.Cast_1";
-                _anim.Play(_anim_name, 0, 0);
+                    Invoke(nameof(ShootLaser), 0.33f);
+                }
+                else
+                {
+                    gun_timer = gun_cooldown;
+                    Animator _anim = (f % 2 == 0 ? hand_right : hand_left);
 
-                Invoke(nameof(ShootProjectileDelayed), 0.1f);
-                f++;
+                    string _anim_name = "Base.Cast_1";
+                    // for(int i = 0; i < hand_trails.Length; i++)
+                    //     hand_trails[i].EmitFor(0.5f);
+                    _anim.Play(_anim_name, 0, 0);
+
+                    Invoke(nameof(ShootProjectileDelayed), 0.1f);
+                    f++;
+                }
             }
         }
 
@@ -144,6 +195,8 @@ public class SpellsController : MonoSingleton<SpellsController>
                 f++;
                 hand_right.Play("Base.Cast_2", 0, 0);
                 hand_left.Play("Base.Cast_2", 0, 0);
+                for(int i = 0; i < hand_trails.Length; i++)
+                    hand_trails[i].EmitFor(2f);
 
                 spell_timer = gun_timer = 1.44f;
                 gunAudioSrc.PlayOneShot(laguna_clip);
@@ -163,23 +216,24 @@ public class SpellsController : MonoSingleton<SpellsController>
 
     void CastLagunaBlade()
     {
+        CameraController.Instance.AddFov(4.5f);
         GameObject g = Instantiate(LagunaBlade_original, middle_gunPoint.position, Quaternion.identity);
         LagunaBlade lagunaBlade = g.GetComponent<LagunaBlade>();
 
         Ray ray = CameraController.Instance.worldCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
 
-        
-
-
         RaycastHit hit;
         if(Physics.Raycast(ray, out hit, 72, hurtMask))
         {
+            
             lagunaBlade.Make(middle_gunPoint, hit.point);
         }
         else
             lagunaBlade.Make(middle_gunPoint, ray.GetPoint(16));
 
         PlayerController.Instance.MakeSlowForXTime(0.033f);
+        
+        PlayerController.Instance.MakeGravityZeroForXTime(0.033f);
         PlayerController.Instance.BoostVelocity(-ray.direction * 18);
 
         Debug.Log("CastLagunaBlade()");
@@ -192,5 +246,6 @@ public class SpellsController : MonoSingleton<SpellsController>
     public AudioSource gunAudioSrc_R;
     public AudioClip shoot_clip;
     public AudioClip laguna_clip;
+    public AudioClip laser_clip;
 }
 

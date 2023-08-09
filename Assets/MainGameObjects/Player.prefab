@@ -260,7 +260,7 @@ Camera:
     height: 1
   near clip plane: 0.05
   far clip plane: 1000
-  field of view: 65
+  field of view: 80
   orthographic: 0
   orthographic size: 5
   m_Depth: 1
@@ -356,6 +356,7 @@ MonoBehaviour:
   rotationX: 0
   externalVelocity: {x: 0, y: 0, z: 0}
   playerLight: {fileID: 936771249}
+  Health: 50
   player_audio: {fileID: 0}
   hurt_audio: {fileID: 0}
   jump_clip: {fileID: 0}
@@ -383,14 +384,20 @@ MonoBehaviour:
   orb_original: {fileID: 2346583946352013067, guid: 3e9cf8083f1851844a0845a9e1964433, type: 3}
   activeOrb: {fileID: 0}
   tornado_original: {fileID: 8030027083641448654, guid: 86358a5c153575c408120d1dbd756c5e, type: 3}
+  hand_trails:
+  - {fileID: 5103335570926328611}
+  - {fileID: 6737226864658988676}
+  laser_original: {fileID: 8161211130740228824, guid: 4ffc58343b3ae7f4a85ecc7a3db7c64f, type: 3}
   LagunaBlade_original: {fileID: 5957053743386221727, guid: 760d47090c8e6cd4cb6864cca4e67286, type: 3}
   hurtMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 73
   gunAudioSrc: {fileID: 4048487985662658577}
   gunAudioSrc_L: {fileID: 96459870661329820}
   gunAudioSrc_R: {fileID: 1422563638867727422}
-  shoot_clip: {fileID: 8300000, guid: d3733a574fa7fe140a6583545ec9abec, type: 3}
+  shoot_clip: {fileID: 8300000, guid: 4f1eab7a4e47eb04bb249c81724b1bb4, type: 3}
+  laguna_clip: {fileID: 8300000, guid: 1d3bbc81357ef944f833a1467b7bee22, type: 3}
+  laser_clip: {fileID: 8300000, guid: ce4ceafb4296850408e91f7207d7f80b, type: 3}
 --- !u!1 &628646582380237216
 GameObject:
   m_ObjectHideFlags: 0
@@ -1189,6 +1196,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2353841748285177342, guid: e9516a04bd111d54da51b9f86af19d9d, type: 3}
   m_PrefabInstance: {fileID: 5370445667105825570}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &6737226864658988676 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1727367686231907750, guid: e9516a04bd111d54da51b9f86af19d9d, type: 3}
+  m_PrefabInstance: {fileID: 5370445667105825570}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c96becdd3cb4664e91fa15997801e29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!95 &8779425805477365009 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 3697858403897484851, guid: e9516a04bd111d54da51b9f86af19d9d, type: 3}
@@ -1266,3 +1284,14 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 3697858403897484851, guid: e9516a04bd111d54da51b9f86af19d9d, type: 3}
   m_PrefabInstance: {fileID: 5848600779463231109}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &5103335570926328611 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1727367686231907750, guid: e9516a04bd111d54da51b9f86af19d9d, type: 3}
+  m_PrefabInstance: {fileID: 5848600779463231109}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c96becdd3cb4664e91fa15997801e29, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

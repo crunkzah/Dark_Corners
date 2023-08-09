@@ -9,6 +9,7 @@ public enum EnemyState
     Chasing,
     Aiming,
     Airbourne,
+    Fleeing,
     Dead
 }
 

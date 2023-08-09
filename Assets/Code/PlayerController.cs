@@ -43,6 +43,13 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
         this.enabled = true;
     }
 
+    public bool IsCrouching()
+    {
+        if(controller.height < 1.9f)
+            return true;
+        return false;
+    }
+
     const float GRAVITY_Y = -15;
     float GetGravity()
     {
@@ -52,7 +59,7 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
     }
 
     float gravity_zero_timer;
-    void MakeGravityZeroForXTime(float x)
+    public void MakeGravityZeroForXTime(float x)
     {
         gravity_zero_timer = x;
     }
@@ -116,6 +123,11 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
         velocity = _vel;
     }
 
+    public void BoostVelocityAdditive(Vector3 _vel)
+    {
+        velocity += _vel;
+    }
+
     bool wasGroundedBefore = false;
 
     Quaternion dump_q;
@@ -175,7 +187,7 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
     bool isDashing = false;
     Vector3 dash_position;
     Vector3 dash_position_direction;
-    public const float DASH_SPEED = 144 * 3;
+    public const float DASH_SPEED = 144 * 3f;
     
     Vector3 velocity_before_dash;
 
@@ -200,7 +212,7 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
         float targetIntensity = 0;
         if((Math.Get_XZ(velocity) + Math.Get_XZ(externalVelocity)).sqrMagnitude > 0)
             targetIntensity = 3;
-        playerLight.intensity = Mathf.MoveTowards(playerLight.intensity, targetIntensity, 16 * dt);
+        playerLight.intensity = Mathf.MoveTowards(playerLight.intensity, targetIntensity, 32 * dt);
 
         HUDManager.HideLabelText();
         RaycastHit interactionHit;        
@@ -276,7 +288,8 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
 
         if(controller.isGrounded)
         {
-            velocity.y = VELOCITY_Y_GROUNDED;
+            if(gravity_zero_timer <= 0)
+                velocity.y = VELOCITY_Y_GROUNDED;
 
             externalVelocity = Vector3.MoveTowards(externalVelocity, new Vector3(0, 0, 0), externalVelocityDeceleration * 4 * dt);
         }
@@ -323,7 +336,7 @@ public class PlayerController : MonoSingleton<PlayerController>, IDamagable
         {
             velocity = new Vector3(0, 0, 0);
             transform.position = Vector3.MoveTowards(transform.position, dash_position, dt * DASH_SPEED);
-            UberManager.Instance.timeScale = 0.1f;
+            UberManager.Instance.timeScale = 0.05f;
             if(Vector3.Distance(transform.position, dash_position) < 0.02f)
             {
                 isDashing = false;

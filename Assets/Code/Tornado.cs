@@ -8,7 +8,7 @@ public class Tornado : MonoBehaviour
     Vector3 velocity;
 
     public Vector3 start_scale = new Vector3(0.5f, 0.5f, 0.5f);
-    public Vector3 end_scale = new Vector3(1.5f, 1.5f, 1.5f);
+    public Vector3 end_scale = new Vector3(2.5f, 2.5f, 2.5f);
 
     public void Launch(Vector3 pos, Vector3 _velocity)
     {
@@ -32,11 +32,11 @@ public class Tornado : MonoBehaviour
         }
 
         Vector3 s = transform.localScale;
-        transform.localScale = Vector3.MoveTowards(transform.localScale, end_scale, dt * 3);
+        transform.localScale = Vector3.MoveTowards(transform.localScale, end_scale, dt * 4);
 
         Vector3 _dir = velocity.normalized;
 
-        int len = Physics.CapsuleCastNonAlloc(transform.position, transform.position + new Vector3(0, 6, 0), 0.5f, _dir, hurt_cols, dt, hurt_mask);
+        int len = Physics.CapsuleCastNonAlloc(transform.position, transform.position + new Vector3(0, 6, 0), 1f, _dir, hurt_cols, dt, hurt_mask);
 
         for(int i = 0; i < len; i++)
         {

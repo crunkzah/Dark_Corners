@@ -36,6 +36,7 @@ public class LinaController : MonoBehaviour, IDamagable, ILaunchableAirbourne
     
 
     public GameObject revolver;
+    float flee_timeStamp;
 
     void SetState(EnemyState _state)
     {
@@ -56,6 +57,25 @@ public class LinaController : MonoBehaviour, IDamagable, ILaunchableAirbourne
             case(EnemyState.Chasing):
             {
                 agent.speed = agent_speed_original;
+                break;
+            }
+            case(EnemyState.Fleeing):
+            {
+                Debug.Log("SetState Fleeing");
+                for(int tries = 0; tries < 8; tries++)
+                {
+                    //Debug.Log("try " + tries);
+                    Vector3 pos = transform.position + new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f)).normalized * Random.Range(6f, 16f);
+                    NavMeshHit navMeshHit;
+                    if(NavMesh.SamplePosition(pos, out navMeshHit, 4, NavMesh.AllAreas))
+                    {
+                        tries = 99;
+                        agent.SetDestination(navMeshHit.position);
+                    }
+                }
+
+                agent.speed = agent_speed_original * 1.5f;
+
                 break;
             }
             case(EnemyState.Airbourne):
@@ -144,6 +164,13 @@ public class LinaController : MonoBehaviour, IDamagable, ILaunchableAirbourne
                     Math.RotateTowardsPositionXZ(transform, PlayerController.GetPosition(), dt * 4);
                 break;
             }
+            case(EnemyState.Fleeing):
+            {
+                anim.SetFloat("MoveSpeed", agent.velocity.magnitude);
+                if((agent.remainingDistance < 1) || (Time.time - flee_timeStamp > 15))
+                    SetState(EnemyState.Chasing);
+                break;
+            }
             case(EnemyState.Aiming):
             {
                 anim.SetFloat("MoveSpeed", agent.velocity.magnitude);
@@ -182,7 +209,8 @@ public class LinaController : MonoBehaviour, IDamagable, ILaunchableAirbourne
 
     public void OnAttack1End()
     {
-       SetState(EnemyState.Chasing);
+       //SetState(EnemyState.Chasing);
+       SetState(EnemyState.Fleeing);
        anim.Play("Base.Run", 0, 0);
        Debug.Log("OnAttack1End");
     }

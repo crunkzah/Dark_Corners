@@ -81,7 +81,7 @@ public class LagunaBlade : MonoBehaviour
         }
         lr.SetPositions(positions);
 
-        Flashbang.MakeAt(Vector3.Lerp(a, b, 0.975f), 0.45f, 16, 10, new Color(45f/255f, 201f/255f, 1f), true);
+        Flashbang.MakeAt(Vector3.Lerp(a, b, 0.975f), 0.45f, 16, 10, new Color(45f/255f, 201f/255f, 1f), false);
 
         int enemies_hit_cnt = Physics.OverlapSphereNonAlloc(b, 2f, hurt_cols, hurt_mask);
         for(int i = 0; i < enemies_hit_cnt; i++)

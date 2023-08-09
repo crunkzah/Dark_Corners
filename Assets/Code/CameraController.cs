@@ -24,8 +24,14 @@ public class CameraController : MonoSingleton<CameraController>
             ppb.profile = dead_profile;
     }
 
+    public void AddFov(float fov)
+    {
+        worldCam.fieldOfView = Inputs.FIELD_OF_VIEW + fov;
+    }
+
     public void LateUpdate()
     {
+        worldCam.fieldOfView = Mathf.MoveTowards(worldCam.fieldOfView, Inputs.FIELD_OF_VIEW, Time.deltaTime * 10);
         transform.localPosition = Math.Modify_Y(transform.localPosition, cam_height);
     }
 }
