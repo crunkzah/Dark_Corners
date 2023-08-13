@@ -48,6 +48,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   scale: 0.75
+  explosion_original: {fileID: 342809467056187748, guid: f81c4f679175c7c4c9ee1d589814017d, type: 3}
 --- !u!120 &4419521162308998691
 LineRenderer:
   m_ObjectHideFlags: 0

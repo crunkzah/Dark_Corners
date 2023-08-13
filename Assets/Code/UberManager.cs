@@ -6,6 +6,7 @@ using DavidFDev.DevConsole;
 
 public enum EnemyState
 {
+    Spawning,
     Chasing,
     Aiming,
     Airbourne,

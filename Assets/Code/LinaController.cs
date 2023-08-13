@@ -31,6 +31,12 @@ public class LinaController : MonoBehaviour, IDamagable, ILaunchableAirbourne
         materialChanger = GetComponent<MaterialChanger>();
         col = GetComponent<Collider>();
         rb              = GetComponent<Rigidbody>();
+        
+    }
+
+    void Start()
+    {
+        SetState(EnemyState.Spawning);
     }
 
     
@@ -45,6 +51,12 @@ public class LinaController : MonoBehaviour, IDamagable, ILaunchableAirbourne
 
         switch(_state)
         {
+            case(EnemyState.Spawning):
+            {
+                col.enabled = false;
+                materialChanger.ChangeMaterialToSpawning();
+                break;
+            }
             case(EnemyState.Aiming):
             {
                 attack_timer = attack_cooldown;
@@ -141,6 +153,13 @@ public class LinaController : MonoBehaviour, IDamagable, ILaunchableAirbourne
         launchedAirbourneTimeStamp = Time.time;
     }
 
+    public void OnSpawnEnd()
+    {
+        col.enabled = true;
+        SetState(EnemyState.Chasing);
+        materialChanger.RevertMaterialToOriginal();
+    }
+
     void Update()
     {
         float dt = Time.deltaTime;
@@ -148,6 +167,10 @@ public class LinaController : MonoBehaviour, IDamagable, ILaunchableAirbourne
 
         switch(state)
         {
+            case(EnemyState.Spawning):
+            {
+                break;
+            }
             case(EnemyState.Chasing):
             {
                 anim.SetFloat("MoveSpeed", agent.velocity.magnitude);

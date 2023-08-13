@@ -60,6 +60,8 @@ public class LagunaBlade : MonoBehaviour
     Vector3 start;
     Vector3 end;
 
+    public GameObject explosion_original;
+
     
 
     public void Make(Transform _start_tr, Vector3 _end)
@@ -81,7 +83,14 @@ public class LagunaBlade : MonoBehaviour
         }
         lr.SetPositions(positions);
 
-        Flashbang.MakeAt(Vector3.Lerp(a, b, 0.975f), 0.45f, 16, 10, new Color(45f/255f, 201f/255f, 1f), false);
+        Vector3 fx_pos = Vector3.Lerp(a, b, 0.975f);
+
+        Destroy(Instantiate(explosion_original, fx_pos, Quaternion.identity), 3);
+        GameObject fx_start = Instantiate(explosion_original, a, Quaternion.identity);
+        fx_start.transform.localScale *= 0.25f;
+        Destroy(fx_start, 3);
+
+        Flashbang.MakeAt(fx_pos, 0.45f, 16, 10, new Color(45f/255f, 201f/255f, 1f), false);
 
         int enemies_hit_cnt = Physics.OverlapSphereNonAlloc(b, 2f, hurt_cols, hurt_mask);
         for(int i = 0; i < enemies_hit_cnt; i++)

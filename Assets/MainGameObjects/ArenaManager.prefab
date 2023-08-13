@@ -43,5 +43,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 019131463c48d9042b1ada9fdda68e82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  state: 0
   golem_original: {fileID: 1630675948047840922, guid: 9e0a4918a1264324eb23e8a905e1cad7, type: 3}
   lina_original: {fileID: 6930208537625079172, guid: fbbfcd5da428d7647b10c0a0747cd1a9, type: 3}
+  crystal_original: {fileID: 7086588164085811110, guid: 7719d1ceb255a8b4fb7f4eaa46a84b94, type: 3}
+  spawning_timer: 0
+  spawns: []

@@ -17,6 +17,7 @@ public static class Inputs
     public static readonly GameInput JumpKey = new GameInput("Jump", KeyCode.Space);
     public static readonly GameInput InteractKey = new GameInput("Interact", KeyCode.E);
     public static readonly GameInput AttackKey = new GameInput("Attack", KeyCode.Mouse0);
+    public static readonly GameInput AttackAltKey = new GameInput("AttackAlt", KeyCode.Mouse1);
     public static readonly GameInput CrouchKey = new GameInput("Crouch", KeyCode.LeftControl);
 
     public static readonly GameInput Spell_1_Key = new GameInput("Spell1", KeyCode.Q);

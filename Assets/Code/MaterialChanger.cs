@@ -7,7 +7,14 @@ public class MaterialChanger : MonoBehaviour
     public Renderer[] rends;
     public Material hurt_material;
     public Material dead_material;
+    public Material spawning_material;
+
     Material saved_material;
+
+    void Awake()
+    {
+        saved_material = rends[0].sharedMaterial;
+    }
 
     public void ChangeMaterialForXTime(float x)
     {
@@ -26,6 +33,16 @@ public class MaterialChanger : MonoBehaviour
         Invoke(nameof(RevertMaterialToOriginal), x);
     }
 
+    public void ChangeMaterialToSpawning()
+    {
+        CancelInvoke();
+        int len = rends.Length;
+        for(int i = 0; i < len; i++)
+        {
+            rends[i].sharedMaterial = spawning_material;
+        }
+    }
+
     public void ChangeMaterialToDead()
     {
         CancelInvoke();
@@ -36,7 +53,7 @@ public class MaterialChanger : MonoBehaviour
         }
     }
 
-    void RevertMaterialToOriginal()
+    public void RevertMaterialToOriginal()
     {
         int len = rends.Length;
         for(int i = 0; i < len; i++)

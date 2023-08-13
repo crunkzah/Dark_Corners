@@ -31,6 +31,11 @@ public class GolemController : MonoBehaviour, IDamagable, ILaunchableAirbourne
         rb              = GetComponent<Rigidbody>();
     }
 
+    void Start()
+    {
+        SetState(EnemyState.Spawning);
+    }
+
     public void GetLaunched(Vector3 _vel)
     {
         SetState(EnemyState.Airbourne);
@@ -57,6 +62,12 @@ public class GolemController : MonoBehaviour, IDamagable, ILaunchableAirbourne
 
         switch(_state)
         {
+            case(EnemyState.Spawning):
+            {
+                col.enabled = false;
+                materialChanger.ChangeMaterialToSpawning();
+                break;
+            }
             case(EnemyState.Dead):
             {
                 materialChanger.ChangeMaterialToDead();
@@ -98,6 +109,10 @@ public class GolemController : MonoBehaviour, IDamagable, ILaunchableAirbourne
 
         switch(state)
         {
+            case(EnemyState.Spawning):
+            {
+                break;
+            }
             case(EnemyState.Chasing):
             {
                 anim.SetFloat("MoveSpeed", agent.velocity.magnitude);
@@ -129,6 +144,13 @@ public class GolemController : MonoBehaviour, IDamagable, ILaunchableAirbourne
                 break;
             }
         }
+    }
+
+    public void OnSpawnEnd()
+    {
+        col.enabled = true;
+        SetState(EnemyState.Chasing);
+        materialChanger.RevertMaterialToOriginal();
     }
 
     public void OnAttack1()

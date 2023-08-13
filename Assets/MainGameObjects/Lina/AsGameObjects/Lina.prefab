@@ -1372,6 +1372,7 @@ MonoBehaviour:
   - {fileID: 1735525395446200576}
   hurt_material: {fileID: 2100000, guid: 010d1c9055f87984ba3008035904081b, type: 2}
   dead_material: {fileID: 2100000, guid: 813f9aea38d6eb945bfbbe9c497008e7, type: 2}
+  spawning_material: {fileID: 2100000, guid: 4ba531e543ebbf24ab7a2b0cd7214016, type: 2}
 --- !u!1 &7434685253092746511
 GameObject:
   m_ObjectHideFlags: 0

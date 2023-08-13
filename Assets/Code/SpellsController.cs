@@ -114,6 +114,20 @@ public class SpellsController : MonoSingleton<SpellsController>
                 gun_timer = 0;
         }
 
+        if(Input.GetKey(Inputs.AttackAltKey.Key))
+        {
+            if(gun_timer == 0)
+            {
+                gun_timer = gun_cooldown * 3.5f;
+                hand_right.Play("Base.Cast_3", 0, 0);
+                hand_left.Play("Base.Cast_3", 0, 0);
+                for(int i = 0; i < hand_trails.Length; i++)
+                    hand_trails[i].EmitFor(0.5f);
+
+                Invoke(nameof(ShootLaser), 0.33f);
+            }
+        }
+
         if(gun_timer == 0)
         {
             if(Input.GetKey(Inputs.AttackKey.Key))

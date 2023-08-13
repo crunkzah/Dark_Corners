@@ -464,7 +464,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 1535
+    m_Bits: 3583
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1141,6 +1141,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 169456243632417818}
     m_Modifications:
+    - target: {fileID: 1727367686231907750, guid: e9516a04bd111d54da51b9f86af19d9d, type: 3}
+      propertyPath: fade
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7327711138307472457, guid: e9516a04bd111d54da51b9f86af19d9d, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -1224,6 +1228,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8104719394755039613}
     m_Modifications:
+    - target: {fileID: 1727367686231907750, guid: e9516a04bd111d54da51b9f86af19d9d, type: 3}
+      propertyPath: fade
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7327711138307472457, guid: e9516a04bd111d54da51b9f86af19d9d, type: 3}
       propertyPath: m_RootOrder
       value: 0
